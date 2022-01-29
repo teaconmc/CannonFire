@@ -1,0 +1,18 @@
+modLoader="javafml"
+loaderVersion="[39,)"
+license="BSD-3-Clause"
+
+[[mods]]
+modId="cannon_fire"
+version="${file.jarVersion}"
+displayName="Cannon Fire"
+credits="Yuri's Cat for textures and models"
+authors="TeaConMC"
+description="A cannon which shoots player far away"
+
+[[dependencies.cannon_fire]]
+modId="forge"
+mandatory=true
+versionRange="[39,)"
+ordering="NONE"
+side="BOTH"
