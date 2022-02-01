@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "cannon_fire:block/cannon_block"
+    }
+  }
+}
