@@ -7,11 +7,14 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -117,6 +120,10 @@ public class CannonBlockEntity extends BlockEntity {
         if (!entity.level.isClientSide) {
             if (entity.level.equals(this.level)) {
                 entity.moveTo(Vec3.atCenterOf(this.getBlockPos()));
+            }
+            if (entity instanceof ServerPlayer serverPlayer) {
+                var text = new TranslatableComponent(CannonFire.TEXT_SHIFT_OUT);
+                serverPlayer.sendMessage(text, ChatType.GAME_INFO, Util.NIL_UUID);
             }
             this.bulletEntity = entity.getUUID();
             this.markUpdated();
