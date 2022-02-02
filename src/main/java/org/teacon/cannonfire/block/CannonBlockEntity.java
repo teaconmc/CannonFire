@@ -1,6 +1,7 @@
 package org.teacon.cannonfire.block;
 
 import com.mojang.datafixers.DSL;
+import com.mojang.math.Vector3f;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -31,6 +32,7 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.teacon.cannonfire.CannonFire;
+import org.teacon.cannonfire.player.CannonInteractionHandler;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -45,10 +47,12 @@ public class CannonBlockEntity extends BlockEntity {
     private static final String BULLET_UUID = "BulletUUID";
     private static final String YAW_OFFSET = "CannonYawOffset";
     private static final String PITCH_OFFSET = "CannonPitchOffset";
+    private static final String BULLET_SHOT_SPEED = "BulletShotSpeed";
     private static final String PREPARATION_TICK = "PreparationTick";
 
     private float localYaw = 0F;
     private float localPitch = 30F;
+    private float bulletShotSpeed = 4F;
 
     private int preparationTick = 0;
     private @Nullable UUID bulletEntity;
@@ -116,6 +120,24 @@ public class CannonBlockEntity extends BlockEntity {
         }
     }
 
+    public void releaseBullet() {
+        this.bulletEntity = null;
+        this.markUpdated();
+    }
+
+    public void tryShootBullet(LivingEntity entity) {
+        if (entity.getUUID().equals(this.bulletEntity) && this.preparationTick >= 30) {
+            var direction = new Vector3f(0, this.bulletShotSpeed, 0);
+            entity.getPersistentData().putBoolean(CannonInteractionHandler.DISCARD_FRICTION, true);
+            direction.transform(Vector3f.XP.rotationDegrees(90 - this.getPitch()));
+            direction.transform(Vector3f.YP.rotationDegrees(180 - this.getYaw()));
+            entity.makeStuckInBlock(this.getBlockState(), Vec3.ZERO);
+            entity.setDeltaMovement(new Vec3(direction));
+            entity.setDiscardFriction(true);
+            this.releaseBullet();
+        }
+    }
+
     public boolean isBullet(LivingEntity entity) {
         return entity.level.equals(this.level) && entity.getUUID().equals(this.bulletEntity);
     }
@@ -128,6 +150,7 @@ public class CannonBlockEntity extends BlockEntity {
         }
         tag.putFloat(YAW_OFFSET, this.localYaw);
         tag.putFloat(PITCH_OFFSET, this.localPitch);
+        tag.putFloat(BULLET_SHOT_SPEED, this.bulletShotSpeed);
         tag.putFloat(PREPARATION_TICK, this.preparationTick);
     }
 
@@ -137,6 +160,7 @@ public class CannonBlockEntity extends BlockEntity {
         this.bulletEntity = tag.hasUUID(BULLET_UUID) ? tag.getUUID(BULLET_UUID) : null;
         this.localYaw = Mth.positiveModulo(tag.getFloat(YAW_OFFSET) + 45, 90) - 45;
         this.localPitch = Mth.clamp(tag.getFloat(PITCH_OFFSET), 0, 90);
+        this.bulletShotSpeed = tag.getInt(BULLET_SHOT_SPEED);
         this.preparationTick = tag.getInt(PREPARATION_TICK);
     }
 
@@ -150,6 +174,7 @@ public class CannonBlockEntity extends BlockEntity {
         return Util.make(new CompoundTag(), tag -> {
             tag.putFloat(YAW_OFFSET, this.localYaw);
             tag.putFloat(PITCH_OFFSET, this.localPitch);
+            tag.putFloat(BULLET_SHOT_SPEED, this.bulletShotSpeed);
             if (this.bulletEntity != null) {
                 tag.putUUID(BULLET_UUID, this.bulletEntity);
             }
@@ -165,6 +190,7 @@ public class CannonBlockEntity extends BlockEntity {
     public void handleUpdateTag(CompoundTag tag) {
         this.localYaw = tag.getFloat(YAW_OFFSET);
         this.localPitch = tag.getFloat(PITCH_OFFSET);
+        this.bulletShotSpeed = tag.getFloat(BULLET_SHOT_SPEED);
         this.bulletEntity = tag.hasUUID(BULLET_UUID) ? tag.getUUID(BULLET_UUID) : null;
     }
 
@@ -196,18 +222,8 @@ public class CannonBlockEntity extends BlockEntity {
                 }
                 var bullet = cannon.bulletEntity;
                 var entity = bullet == null ? null : serverWorld.getEntity(bullet);
-                if (entity != null) {
-                    if (!entity.blockPosition().equals(pos)) {
-                        cannon.bulletEntity = null;
-                        cannon.markUpdated();
-                    } else if (entity.isShiftKeyDown()) {
-                        entity.moveTo(Vec3.atCenterOf(pos).add(0.0, 0.375, 0.0));
-                        cannon.bulletEntity = null;
-                        cannon.markUpdated();
-                    } else {
-                        entity.setYBodyRot(entity.getYRot());
-                        entity.setXRot(0.0F);
-                    }
+                if (entity != null && !entity.blockPosition().equals(pos)) {
+                    cannon.releaseBullet();
                 }
             }
         }
