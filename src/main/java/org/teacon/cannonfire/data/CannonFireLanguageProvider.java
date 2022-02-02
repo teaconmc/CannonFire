@@ -38,5 +38,10 @@ public class CannonFireLanguageProvider extends LanguageProvider {
             case EN_US -> "Cannon";
             case ZH_CN -> "火炮";
         });
+        this.add(CannonFire.TEXT_NEEDS_CAMPFIRE, switch (this.locale) {
+            default -> throw new IllegalStateException();
+            case EN_US -> "A campfire block is required below for lighting the cannon";
+            case ZH_CN -> "点燃火炮需要下方有营火方块存在";
+        });
     }
 }

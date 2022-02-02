@@ -4,6 +4,7 @@ import com.mojang.datafixers.DSL;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -13,6 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CampfireBlock;
@@ -26,12 +28,16 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.teacon.cannonfire.CannonFire;
 
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Objects;
+import java.util.UUID;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class CannonBlockEntity extends BlockEntity {
+    private static final String BULLET_UUID = "BulletUUID";
     private static final String YAW_OFFSET = "CannonYawOffset";
     private static final String PITCH_OFFSET = "CannonPitchOffset";
     private static final String PREPARATION_TICK = "PreparationTick";
@@ -40,6 +46,7 @@ public class CannonBlockEntity extends BlockEntity {
     private float localPitch = 30F;
 
     private int preparationTick = 0;
+    private @Nullable UUID bulletEntity;
 
     @SubscribeEvent
     public static void onRegisterBlockEntityType(RegistryEvent.Register<BlockEntityType<?>> event) {
@@ -81,16 +88,51 @@ public class CannonBlockEntity extends BlockEntity {
     }
 
     public float getYaw() {
-        return Mth.wrapDegrees(this.localYaw + this.getBlockState().getValue(CannonBlock.FACING).toYRot());
+        return Mth.wrapDegrees(this.localYaw + 180 + this.getBlockState().getValue(CannonBlock.FACING).toYRot());
     }
 
     public float getPitch() {
         return this.localPitch;
     }
 
+    public void setRotation(float pitch, float yaw) {
+        var face = Direction.from2DDataValue(Mth.floor(Mth.wrapDegrees(yaw + 45) / 90 + 2));
+        if (face != this.getBlockState().getValue(CannonBlock.FACING)) {
+            var state = this.getBlockState().setValue(CannonBlock.FACING, face);
+            Objects.requireNonNull(this.level).setBlock(this.getBlockPos(), state, Block.UPDATE_ALL);
+        }
+        var localYaw = Mth.wrapDegrees(yaw - 180 - face.toYRot());
+        if (localYaw != this.localYaw) {
+            this.localYaw = localYaw;
+            this.markUpdated();
+        }
+        var localPitch = Mth.clamp(pitch, 0, 90);
+        if (localPitch != this.localPitch) {
+            this.localPitch = localPitch;
+            this.markUpdated();
+        }
+    }
+
+    public void fillBullet(LivingEntity entity) {
+        if (!entity.level.isClientSide) {
+            if (entity.level.equals(this.level)) {
+                entity.moveTo(Vec3.atCenterOf(this.getBlockPos()));
+            }
+            this.bulletEntity = entity.getUUID();
+            this.markUpdated();
+        }
+    }
+
+    public boolean isBullet(LivingEntity entity) {
+        return entity.level.equals(this.level) && entity.getUUID().equals(this.bulletEntity);
+    }
+
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
+        if (this.bulletEntity != null) {
+            tag.putUUID(BULLET_UUID, this.bulletEntity);
+        }
         tag.putFloat(YAW_OFFSET, this.localYaw);
         tag.putFloat(PITCH_OFFSET, this.localPitch);
         tag.putFloat(PREPARATION_TICK, this.preparationTick);
@@ -99,6 +141,7 @@ public class CannonBlockEntity extends BlockEntity {
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
+        this.bulletEntity = tag.hasUUID(BULLET_UUID) ? tag.getUUID(BULLET_UUID) : null;
         this.localYaw = Mth.positiveModulo(tag.getFloat(YAW_OFFSET) + 45, 90) - 45;
         this.localPitch = Mth.clamp(tag.getFloat(PITCH_OFFSET), 0, 90);
         this.preparationTick = tag.getInt(PREPARATION_TICK);
@@ -114,6 +157,9 @@ public class CannonBlockEntity extends BlockEntity {
         return Util.make(new CompoundTag(), tag -> {
             tag.putFloat(YAW_OFFSET, this.localYaw);
             tag.putFloat(PITCH_OFFSET, this.localPitch);
+            if (this.bulletEntity != null) {
+                tag.putUUID(BULLET_UUID, this.bulletEntity);
+            }
         });
     }
 
@@ -121,11 +167,18 @@ public class CannonBlockEntity extends BlockEntity {
     public void handleUpdateTag(CompoundTag tag) {
         this.localYaw = tag.getFloat(YAW_OFFSET);
         this.localPitch = tag.getFloat(PITCH_OFFSET);
+        this.bulletEntity = tag.hasUUID(BULLET_UUID) ? tag.getUUID(BULLET_UUID) : null;
     }
 
     @Override
     public AABB getRenderBoundingBox() {
         return new AABB(this.getBlockPos()).inflate(1.0);
+    }
+
+    private void markUpdated() {
+        this.setChanged();
+        var state = this.getBlockState();
+        Objects.requireNonNull(this.level).sendBlockUpdated(this.getBlockPos(), state, state, Block.UPDATE_ALL);
     }
 
     public static <T extends BlockEntity> void tick(Level world, BlockPos pos, BlockState state, T blockEntity) {
@@ -142,6 +195,21 @@ public class CannonBlockEntity extends BlockEntity {
                     var center = Vec3.atCenterOf(pos);
                     var particle = ParticleTypes.EXPLOSION_EMITTER;
                     serverWorld.sendParticles(particle, center.x, center.y, center.z, 1, 0.0, 0.0, 0.0, 0.0);
+                }
+                var bullet = cannon.bulletEntity;
+                var entity = bullet == null ? null : serverWorld.getEntity(bullet);
+                if (entity != null) {
+                    if (!entity.blockPosition().equals(pos)) {
+                        cannon.bulletEntity = null;
+                        cannon.markUpdated();
+                    } else if (entity.isShiftKeyDown()) {
+                        entity.moveTo(Vec3.atCenterOf(pos).add(0.0, 0.375, 0.0));
+                        cannon.bulletEntity = null;
+                        cannon.markUpdated();
+                    } else {
+                        entity.setYBodyRot(entity.getYRot());
+                        entity.setXRot(0.0F);
+                    }
                 }
             }
         }

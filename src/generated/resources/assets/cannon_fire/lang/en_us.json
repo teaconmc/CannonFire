@@ -1,3 +1,4 @@
 {
-  "block.cannon_fire.cannon_block": "Cannon"
+  "block.cannon_fire.cannon_block": "Cannon",
+  "chat.cannon_fire.needs_campfire": "A campfire block is required below for lighting the cannon"
 }

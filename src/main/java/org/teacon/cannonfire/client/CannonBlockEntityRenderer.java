@@ -70,7 +70,7 @@ public class CannonBlockEntityRenderer implements BlockEntityRenderer<CannonBloc
         }
 
         poseStack.translate(0.0F, 1.0F, 0.0F);
-        poseStack.mulPose(Vector3f.YN.rotationDegrees(90.0F + blockEntity.getYaw()));
+        poseStack.mulPose(Vector3f.YP.rotationDegrees(90.0F - blockEntity.getYaw()));
 
         this.modelRenderer.renderModel(poseStack.last(), source, blockEntity.getBlockState(),
                 mountModel, 1.0F, 1.0F, 1.0F, packedLight, packedOverlay, EmptyModelData.INSTANCE);

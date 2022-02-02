@@ -13,6 +13,8 @@ import org.teacon.cannonfire.item.CannonItem;
 public class CannonFire {
     public static final String ID = "cannon_fire";
 
+    public static final String TEXT_NEEDS_CAMPFIRE = "chat." + ID + ".needs_campfire";
+
     public static final ResourceLocation CANNON_0_MODEL_ID = new ResourceLocation(ID, "block/cannon_0");
     public static final ResourceLocation CANNON_1_MODEL_ID = new ResourceLocation(ID, "block/cannon_1");
     public static final ResourceLocation CANNON_2_MODEL_ID = new ResourceLocation(ID, "block/cannon_2");

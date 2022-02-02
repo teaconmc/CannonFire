@@ -1,3 +1,4 @@
 {
-  "block.cannon_fire.cannon_block": "\u706B\u70AE"
+  "block.cannon_fire.cannon_block": "\u706B\u70AE",
+  "chat.cannon_fire.needs_campfire": "\u70B9\u71C3\u706B\u70AE\u9700\u8981\u4E0B\u65B9\u6709\u8425\u706B\u65B9\u5757\u5B58\u5728"
 }
