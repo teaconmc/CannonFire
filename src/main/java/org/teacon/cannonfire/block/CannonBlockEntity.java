@@ -7,6 +7,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.Packet;
@@ -34,6 +35,7 @@ import org.teacon.cannonfire.CannonFire;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @MethodsReturnNonnullByDefault
@@ -63,31 +65,15 @@ public class CannonBlockEntity extends BlockEntity {
 
     public ResourceLocation getCannonModel(float partialTick) {
         var clientTick = this.preparationTick + partialTick;
-        if (clientTick < 10) {
-            return CannonFire.CANNON_0_MODEL_ID;
+        if (clientTick < 32) {
+            var index = Math.min(Mth.floor(clientTick / 2), 10);
+            return new ResourceLocation(CannonFire.ID, CannonFire.CANNON_MODEL_ID_PREFIX + index);
         }
-        if (clientTick < 20) {
-            return CannonFire.CANNON_1_MODEL_ID;
+        if (clientTick < 50) {
+            var index = Mth.floor(clientTick / 2) - 5;
+            return new ResourceLocation(CannonFire.ID, CannonFire.CANNON_MODEL_ID_PREFIX + index);
         }
-        if (clientTick < 35) {
-            return CannonFire.CANNON_2_MODEL_ID;
-        }
-        if (clientTick < 40) {
-            return CannonFire.CANNON_3_MODEL_ID;
-        }
-        if (clientTick < 42) {
-            return CannonFire.CANNON_0_MODEL_ID;
-        }
-        if (clientTick < 44) {
-            return CannonFire.CANNON_4_MODEL_ID;
-        }
-        if (clientTick < 46) {
-            return CannonFire.CANNON_0_MODEL_ID;
-        }
-        if (clientTick < 48) {
-            return CannonFire.CANNON_5_MODEL_ID;
-        }
-        return CannonFire.CANNON_0_MODEL_ID;
+        return new ResourceLocation(CannonFire.ID, CannonFire.CANNON_MODEL_ID_PREFIX + 0);
     }
 
     public float getYaw() {
@@ -168,6 +154,11 @@ public class CannonBlockEntity extends BlockEntity {
                 tag.putUUID(BULLET_UUID, this.bulletEntity);
             }
         });
+    }
+
+    @Override
+    public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet) {
+        Optional.ofNullable(packet.getTag()).ifPresent(this::handleUpdateTag);
     }
 
     @Override

@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.ModelManager;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -31,12 +32,10 @@ public class CannonBlockEntityRenderer implements BlockEntityRenderer<CannonBloc
 
     @SubscribeEvent
     public static void onModelRegistry(ModelRegistryEvent event) {
-        ForgeModelBakery.addSpecialModel(CannonFire.CANNON_0_MODEL_ID);
-        ForgeModelBakery.addSpecialModel(CannonFire.CANNON_1_MODEL_ID);
-        ForgeModelBakery.addSpecialModel(CannonFire.CANNON_2_MODEL_ID);
-        ForgeModelBakery.addSpecialModel(CannonFire.CANNON_3_MODEL_ID);
-        ForgeModelBakery.addSpecialModel(CannonFire.CANNON_4_MODEL_ID);
-        ForgeModelBakery.addSpecialModel(CannonFire.CANNON_5_MODEL_ID);
+        for (int i = 0; i < 20; ++i) {
+            var path = CannonFire.CANNON_MODEL_ID_PREFIX + i;
+            ForgeModelBakery.addSpecialModel(new ResourceLocation(CannonFire.ID, path));
+        }
         ForgeModelBakery.addSpecialModel(CannonFire.CANNON_BASE_MODEL_ID);
         ForgeModelBakery.addSpecialModel(CannonFire.CANNON_MOUNT_MODEL_ID);
     }

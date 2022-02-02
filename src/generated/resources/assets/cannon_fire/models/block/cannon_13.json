@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "zzboom": "cannon_fire:block/cannon_zzboom"
+  },
+  "loader": "forge:obj",
+  "model": "cannon_fire:models/block/cannon_13.obj",
+  "flip-v": true
+}

@@ -16,12 +16,8 @@ public class CannonFire {
     public static final String TEXT_NEEDS_CAMPFIRE = "chat." + ID + ".needs_campfire";
     public static final String TEXT_SHIFT_OUT = "chat." + ID + ".shift_out";
 
-    public static final ResourceLocation CANNON_0_MODEL_ID = new ResourceLocation(ID, "block/cannon_0");
-    public static final ResourceLocation CANNON_1_MODEL_ID = new ResourceLocation(ID, "block/cannon_1");
-    public static final ResourceLocation CANNON_2_MODEL_ID = new ResourceLocation(ID, "block/cannon_2");
-    public static final ResourceLocation CANNON_3_MODEL_ID = new ResourceLocation(ID, "block/cannon_3");
-    public static final ResourceLocation CANNON_4_MODEL_ID = new ResourceLocation(ID, "block/cannon_4");
-    public static final ResourceLocation CANNON_5_MODEL_ID = new ResourceLocation(ID, "block/cannon_5");
+    public static final String CANNON_MODEL_ID_PREFIX = "block/cannon_";
+
     public static final ResourceLocation CANNON_BASE_MODEL_ID = new ResourceLocation(ID, "block/cannon_base");
     public static final ResourceLocation CANNON_MOUNT_MODEL_ID = new ResourceLocation(ID, "block/cannon_mount");
 

@@ -30,12 +30,10 @@ public class CannonFireBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        this.cannon(CannonFire.CANNON_0_MODEL_ID.getPath());
-        this.cannon(CannonFire.CANNON_1_MODEL_ID.getPath());
-        this.cannon(CannonFire.CANNON_2_MODEL_ID.getPath());
-        this.cannon(CannonFire.CANNON_3_MODEL_ID.getPath());
-        this.cannon(CannonFire.CANNON_4_MODEL_ID.getPath());
-        this.cannon(CannonFire.CANNON_5_MODEL_ID.getPath());
+        for (int i = 0; i < 20; ++i) {
+            var path = CannonFire.CANNON_MODEL_ID_PREFIX + i;
+            this.cannon(path);
+        }
         this.cannon(CannonFire.CANNON_BASE_MODEL_ID.getPath());
         this.cannon(CannonFire.CANNON_MOUNT_MODEL_ID.getPath());
 
