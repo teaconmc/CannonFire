@@ -14,13 +14,28 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.teacon.cannonfire.block.CannonBlockEntity;
+import org.teacon.cannonfire.entity.CannonBulletCommonStatusHandler;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
-public class CannonBulletRenderHandler {
+public class CannonBulletClientStatusHandler {
+    public static void markAsBullet() {
+        var player = Minecraft.getInstance().player;
+        if (player != null) {
+            CannonBulletCommonStatusHandler.markBullet(player, true);
+        }
+    }
+
+    public static void markAsNotBullet() {
+        var player = Minecraft.getInstance().player;
+        if (player != null) {
+            CannonBulletCommonStatusHandler.markBullet(player, false);
+        }
+    }
+
     @SubscribeEvent
     public static void onRenderTick(TickEvent.RenderTickEvent event) {
         var entity = Minecraft.getInstance().getCameraEntity();

@@ -32,7 +32,7 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.teacon.cannonfire.CannonFire;
-import org.teacon.cannonfire.player.CannonInteractionHandler;
+import org.teacon.cannonfire.entity.CannonBulletCommonStatusHandler;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -106,6 +106,13 @@ public class CannonBlockEntity extends BlockEntity {
         }
     }
 
+    private Vec3 getShootDirection() {
+        var direction = new Vector3f(0, this.bulletShotSpeed, 0);
+        direction.transform(Vector3f.XP.rotationDegrees(90 - this.getPitch()));
+        direction.transform(Vector3f.YP.rotationDegrees(180 - this.getYaw()));
+        return new Vec3(direction);
+    }
+
     public void fillBullet(LivingEntity entity) {
         if (!entity.level.isClientSide) {
             if (entity.level.equals(this.level)) {
@@ -127,13 +134,9 @@ public class CannonBlockEntity extends BlockEntity {
 
     public void tryShootBullet(LivingEntity entity) {
         if (entity.getUUID().equals(this.bulletEntity) && this.preparationTick >= 30) {
-            var direction = new Vector3f(0, this.bulletShotSpeed, 0);
-            entity.getPersistentData().putBoolean(CannonInteractionHandler.DISCARD_FRICTION, true);
-            direction.transform(Vector3f.XP.rotationDegrees(90 - this.getPitch()));
-            direction.transform(Vector3f.YP.rotationDegrees(180 - this.getYaw()));
+            CannonBulletCommonStatusHandler.markBullet(entity, true);
             entity.makeStuckInBlock(this.getBlockState(), Vec3.ZERO);
-            entity.setDeltaMovement(new Vec3(direction));
-            entity.setDiscardFriction(true);
+            entity.setDeltaMovement(this.getShootDirection());
             this.releaseBullet();
         }
     }

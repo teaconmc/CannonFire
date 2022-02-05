@@ -16,6 +16,10 @@ public class CannonFire {
     public static final String TEXT_NEEDS_CAMPFIRE = "chat." + ID + ".needs_campfire";
     public static final String TEXT_SHIFT_OUT = "chat." + ID + ".shift_out";
 
+    public static final String NETWORK_VERSION = "1";
+
+    public static final ResourceLocation NETWORK_ID = new ResourceLocation(ID, "network");
+
     public static final String CANNON_MODEL_ID_PREFIX = "block/cannon_";
 
     public static final ResourceLocation CANNON_BASE_MODEL_ID = new ResourceLocation(ID, "block/cannon_base");
