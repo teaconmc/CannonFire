@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.teacon.cannonfire.CannonFire;
@@ -27,9 +27,9 @@ public class CannonFireBlockEntityWithoutLevelRenderer extends BlockEntityWithou
     private final BlockEntityRenderDispatcher dispatcher;
 
     @SubscribeEvent
-    public static void onAddReloadListener(AddReloadListenerEvent event) {
+    public static void onAddReloadListener(RegisterClientReloadListenersEvent event) {
         INSTANCE = new CannonFireBlockEntityWithoutLevelRenderer(Minecraft.getInstance());
-        event.addListener(INSTANCE);
+        event.registerReloadListener(INSTANCE);
     }
 
     private CannonFireBlockEntityWithoutLevelRenderer(Minecraft mc) {
