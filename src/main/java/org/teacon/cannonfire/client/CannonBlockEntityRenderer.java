@@ -83,4 +83,9 @@ public class CannonBlockEntityRenderer implements BlockEntityRenderer<CannonBloc
 
         poseStack.popPose();
     }
+
+    @Override
+    public int getViewDistance() {
+        return 256;
+    }
 }
