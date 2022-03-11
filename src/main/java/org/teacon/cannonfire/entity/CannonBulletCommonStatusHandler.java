@@ -23,6 +23,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CannonBulletCommonStatusHandler {
     public static final String BULLET_FLYING = "CannonFireBulletFlying";
+    public static final String BULLET_ON_GROUND = "CannonFireBulletOnGround";
 
     public static void markBullet(LivingEntity entity, boolean isFlyingBullet) {
         entity.setDiscardFriction(isFlyingBullet);
@@ -52,6 +53,15 @@ public class CannonBulletCommonStatusHandler {
                 cannon.tryShootBullet(entity);
             }
         }
+        if (entity.getPersistentData().getBoolean(BULLET_ON_GROUND)) {
+            entity.getPersistentData().remove(BULLET_ON_GROUND);
+            if (entity.isOnGround()) {
+                markBullet(entity, false);
+            }
+        }
+        if (entity.getPersistentData().getBoolean(BULLET_FLYING)) {
+            entity.getPersistentData().putBoolean(BULLET_ON_GROUND, entity.isOnGround());
+        }
     }
 
     @SubscribeEvent
@@ -59,7 +69,6 @@ public class CannonBulletCommonStatusHandler {
         var entity = event.getEntityLiving();
         if (entity.getPersistentData().getBoolean(BULLET_FLYING)) {
             event.setDamageMultiplier(0.0F);
-            markBullet(entity, false);
         }
     }
 
