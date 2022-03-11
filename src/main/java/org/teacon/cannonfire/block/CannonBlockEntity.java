@@ -216,7 +216,7 @@ public class CannonBlockEntity extends BlockEntity {
                 if (cannon.preparationTick == 30) {
                     var belowPos = pos.below();
                     var belowState = serverWorld.getBlockState(belowPos);
-                    if (belowState.hasProperty(CampfireBlock.LIT) && belowState.is(BlockTags.CAMPFIRES)) {
+                    if (belowState.hasProperty(CampfireBlock.LIT) && CannonBlock.isCampFire(belowState)) {
                         serverWorld.setBlock(belowPos, belowState.setValue(CampfireBlock.LIT, false), Block.UPDATE_ALL);
                     }
                     var center = Vec3.atCenterOf(pos);

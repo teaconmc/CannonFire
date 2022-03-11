@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[39,)"
+loaderVersion="[40,)"
 license="BSD-3-Clause"
 
 [[mods]]
@@ -13,6 +13,6 @@ description="A cannon which shoots player far away"
 [[dependencies.cannon_fire]]
 modId="forge"
 mandatory=true
-versionRange="[39,)"
+versionRange="[40,)"
 ordering="NONE"
 side="BOTH"

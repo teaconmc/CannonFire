@@ -130,7 +130,7 @@ public class CannonBlock extends Block implements EntityBlock {
     public void tryLightCannon(Player player, BlockPos pos, InteractionHand hand, ItemStack item) {
         var belowPos = pos.below();
         var belowState = player.level.getBlockState(belowPos);
-        if (belowState.hasProperty(CampfireBlock.LIT) && belowState.is(BlockTags.CAMPFIRES)) {
+        if (belowState.hasProperty(CampfireBlock.LIT) && isCampFire(belowState)) {
             if (!belowState.getValue(CampfireBlock.LIT)) {
                 var sound = SoundEvents.FLINTANDSTEEL_USE;
                 var soundPitch = player.level.getRandom().nextFloat() * 0.4F + 0.8F;
@@ -161,11 +161,15 @@ public class CannonBlock extends Block implements EntityBlock {
         return InteractionResult.PASS;
     }
 
+    public static boolean isCampFire(BlockState state) {
+        return state.m_204336_(BlockTags.CAMPFIRES);
+    }
+
     public enum Status implements StringRepresentable {
         DECORATION, UNLIT, LIT;
 
         public static Status fromBelowBlock(BlockState state) {
-            if (!state.hasProperty(CampfireBlock.LIT) || !state.is(BlockTags.CAMPFIRES)) {
+            if (!state.hasProperty(CampfireBlock.LIT) || !isCampFire(state)) {
                 return Status.DECORATION;
             } else if (!state.getValue(CampfireBlock.LIT)) {
                 return Status.UNLIT;
