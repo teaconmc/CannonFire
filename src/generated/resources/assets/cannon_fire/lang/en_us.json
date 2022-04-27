@@ -1,4 +1,6 @@
 {
+  "advancement.cannon_fire.liftoff.description": "Shoot yourself by a cannon.",
+  "advancement.cannon_fire.liftoff.title": "Three, Two, One ... Liftoff!",
   "block.cannon_fire.cannon_block": "Cannon",
   "chat.cannon_fire.needs_campfire": "A campfire block is required below for lighting the cannon",
   "chat.cannon_fire.shift_out": "Press shift key to get out of the cannon"

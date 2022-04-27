@@ -1,0 +1,28 @@
+{
+  "display": {
+    "icon": {
+      "item": "cannon_fire:cannon_block"
+    },
+    "title": {
+      "translate": "advancement.cannon_fire.liftoff.title"
+    },
+    "description": {
+      "translate": "advancement.cannon_fire.liftoff.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "liftoff": {
+      "trigger": "cannon_fire:liftoff",
+      "conditions": {}
+    }
+  },
+  "requirements": [
+    [
+      "liftoff"
+    ]
+  ]
+}

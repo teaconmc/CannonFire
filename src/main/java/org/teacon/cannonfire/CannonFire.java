@@ -13,6 +13,8 @@ import org.teacon.cannonfire.item.CannonItem;
 public class CannonFire {
     public static final String ID = "cannon_fire";
 
+    public static final String TEXT_LIFTOFF_DESC = "advancement." + ID + ".liftoff.description";
+    public static final String TEXT_LIFTOFF_TITLE = "advancement." + ID + ".liftoff.title";
     public static final String TEXT_NEEDS_CAMPFIRE = "chat." + ID + ".needs_campfire";
     public static final String TEXT_SHIFT_OUT = "chat." + ID + ".shift_out";
 
@@ -21,6 +23,8 @@ public class CannonFire {
     public static final ResourceLocation NETWORK_ID = new ResourceLocation(ID, "network");
 
     public static final String CANNON_MODEL_ID_PREFIX = "block/cannon_";
+
+    public static final ResourceLocation CANNON_LIFTOFF_ADVANCEMENT_ID = new ResourceLocation(ID, "liftoff");
 
     public static final ResourceLocation CANNON_BASE_MODEL_ID = new ResourceLocation(ID, "block/cannon_base");
     public static final ResourceLocation CANNON_MOUNT_MODEL_ID = new ResourceLocation(ID, "block/cannon_mount");

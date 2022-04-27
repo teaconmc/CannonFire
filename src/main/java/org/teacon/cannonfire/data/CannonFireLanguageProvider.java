@@ -38,6 +38,16 @@ public class CannonFireLanguageProvider extends LanguageProvider {
             case EN_US -> "Cannon";
             case ZH_CN -> "火炮";
         });
+        this.add(CannonFire.TEXT_LIFTOFF_DESC, switch (this.locale) {
+            default -> throw new IllegalStateException();
+            case EN_US -> "Shoot yourself by a cannon.";
+            case ZH_CN -> "通过一个火炮把自己发射出去。";
+        });
+        this.add(CannonFire.TEXT_LIFTOFF_TITLE, switch (this.locale) {
+            default -> throw new IllegalStateException();
+            case EN_US -> "Three, Two, One ... Liftoff!";
+            case ZH_CN -> "三，二，一……发射！";
+        });
         this.add(CannonFire.TEXT_NEEDS_CAMPFIRE, switch (this.locale) {
             default -> throw new IllegalStateException();
             case EN_US -> "A campfire block is required below for lighting the cannon";

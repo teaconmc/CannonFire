@@ -17,10 +17,8 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -35,6 +33,7 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.teacon.cannonfire.CannonFire;
+import org.teacon.cannonfire.critereon.CannonLiftoffCriterionTrigger;
 import org.teacon.cannonfire.entity.CannonBulletCommonStatusHandler;
 
 import javax.annotation.Nullable;
@@ -140,6 +139,9 @@ public class CannonBlockEntity extends BlockEntity {
             CannonBulletCommonStatusHandler.markBullet(entity, true);
             entity.makeStuckInBlock(this.getBlockState(), Vec3.ZERO);
             entity.setDeltaMovement(this.getShootDirection());
+            if (entity instanceof ServerPlayer player) {
+                CannonLiftoffCriterionTrigger.INSTANCE.trigger(player, this.getBlockPos());
+            }
             this.releaseBullet();
         }
     }

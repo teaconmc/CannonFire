@@ -1,6 +1,6 @@
 1738cc4bb0d6de531281ef25cdb9e847b0fd211e assets/cannon_fire/blockstates/cannon_block.json
-6ac9e371b18b62b5dc3f1af3a5777dae6adedc7a assets/cannon_fire/lang/en_us.json
-da90878073d76a2b10ce7a40ba3996543e98eb98 assets/cannon_fire/lang/zh_cn.json
+eb4712cc0029170f815b51c8bbd91543e3fdb451 assets/cannon_fire/lang/en_us.json
+40ec9fe4dd47622de496e49bf1ab9e27a8d02bd7 assets/cannon_fire/lang/zh_cn.json
 b635b049983bbce28c170dfe835e5fdbaff90496 assets/cannon_fire/models/block/cannon_0.json
 ffd0848e949ae287bf273ceae2c6932e2fb085a1 assets/cannon_fire/models/block/cannon_1.json
 59ada589803de45e037265185f3cc0e34750a506 assets/cannon_fire/models/block/cannon_10.json
@@ -25,4 +25,5 @@ ce76ff662a81dab7eac4ff50e5479d94290b3b54 assets/cannon_fire/models/block/cannon_
 edd2f6ec8d5ae7a15c651b54da5c50df116aef52 assets/cannon_fire/models/block/cannon_block.json
 61a25eea15b752d5b216be8a1b37c2a614b442c9 assets/cannon_fire/models/block/cannon_mount.json
 80764472c6f4941d9d1cd2e208a5f236424b329f assets/cannon_fire/models/item/cannon_block.json
+b98538d142d6b7e07a45400de8637289b850d682 data/cannon_fire/advancements/liftoff.json
 782adf59038d2257e7db47ffcd2f3ccbb3164c91 data/cannon_fire/loot_tables/blocks/cannon_block.json
