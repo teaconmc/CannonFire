@@ -29,7 +29,7 @@ public class CannonFire {
 
     public static final ResourceLocation CANNON_BLOCK_ID = new ResourceLocation(ID, "cannon_block");
 
-    public static final RegistryObject<CannonItem> CANNON_ITEM = RegistryObject.of(CANNON_BLOCK_ID, ForgeRegistries.ITEMS);
-    public static final RegistryObject<CannonBlock> CANNON_BLOCK = RegistryObject.of(CANNON_BLOCK_ID, ForgeRegistries.BLOCKS);
-    public static final RegistryObject<BlockEntityType<CannonBlockEntity>> CANNON_BLOCK_ENTITY = RegistryObject.of(CANNON_BLOCK_ID, ForgeRegistries.BLOCK_ENTITIES);
+    public static final RegistryObject<CannonItem> CANNON_ITEM = RegistryObject.create(CANNON_BLOCK_ID, ForgeRegistries.ITEMS);
+    public static final RegistryObject<CannonBlock> CANNON_BLOCK = RegistryObject.create(CANNON_BLOCK_ID, ForgeRegistries.BLOCKS);
+    public static final RegistryObject<BlockEntityType<CannonBlockEntity>> CANNON_BLOCK_ENTITY = RegistryObject.create(CANNON_BLOCK_ID, ForgeRegistries.BLOCK_ENTITIES);
 }
