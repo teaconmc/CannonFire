@@ -17,6 +17,9 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -222,6 +225,7 @@ public class CannonBlockEntity extends BlockEntity {
                     var center = Vec3.atCenterOf(pos);
                     var particle = ParticleTypes.EXPLOSION_EMITTER;
                     serverWorld.sendParticles(particle, center.x, center.y, center.z, 1, 0.0, 0.0, 0.0, 0.0);
+                    serverWorld.playSound(null, pos, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 4.0F, 0.7F);
                 }
                 var bullet = cannon.bulletEntity;
                 var entity = bullet == null ? null : serverWorld.getEntity(bullet);
