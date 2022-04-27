@@ -55,12 +55,12 @@ public class CannonBulletCommonStatusHandler {
         }
         if (entity.getPersistentData().getBoolean(BULLET_ON_GROUND)) {
             entity.getPersistentData().remove(BULLET_ON_GROUND);
-            if (entity.isOnGround()) {
+            if (entity.isOnGround() || entity.isFallFlying()) {
                 markBullet(entity, false);
             }
         }
         if (entity.getPersistentData().getBoolean(BULLET_FLYING)) {
-            entity.getPersistentData().putBoolean(BULLET_ON_GROUND, entity.isOnGround());
+            entity.getPersistentData().putBoolean(BULLET_ON_GROUND, entity.isOnGround() || entity.isFallFlying());
         }
     }
 
