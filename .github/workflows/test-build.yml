@@ -1,0 +1,24 @@
+name: test-build
+on:
+  push:
+    paths:
+      - 'src/**'
+      - 'build.gradle'
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          # Fetch all history
+          fetch-depth: 0
+      - name: Setup Java 17
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Build
+        id: build
+        run: ./gradlew build --stacktrace
