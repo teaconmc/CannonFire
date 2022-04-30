@@ -35,6 +35,7 @@ import net.minecraftforge.fml.common.Mod;
 import org.teacon.cannonfire.CannonFire;
 import org.teacon.cannonfire.critereon.CannonLiftoffCriterionTrigger;
 import org.teacon.cannonfire.entity.CannonBulletCommonStatusHandler;
+import org.teacon.cannonfire.network.CannonFireNetwork;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -135,10 +136,9 @@ public class CannonBlockEntity extends BlockEntity {
     }
 
     public void tryShootBullet(LivingEntity entity) {
-        if (entity.getUUID().equals(this.bulletEntity) && this.preparationTick >= 30) {
-            CannonBulletCommonStatusHandler.markBullet(entity, true);
-            entity.makeStuckInBlock(this.getBlockState(), Vec3.ZERO);
-            entity.setDeltaMovement(this.getShootDirection());
+        if (!entity.level.isClientSide && entity.getUUID().equals(this.bulletEntity) && this.preparationTick >= 30) {
+            var status = new CannonFireNetwork.BulletStatusPacket(true, this.getShootDirection());
+            CannonBulletCommonStatusHandler.markBulletStatus(entity).accept(status);
             if (entity instanceof ServerPlayer player) {
                 CannonLiftoffCriterionTrigger.INSTANCE.trigger(player, this.getBlockPos());
             }

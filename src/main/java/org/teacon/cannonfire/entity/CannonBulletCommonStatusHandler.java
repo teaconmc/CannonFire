@@ -17,6 +17,7 @@ import org.teacon.cannonfire.block.CannonBlockEntity;
 import org.teacon.cannonfire.network.CannonFireNetwork;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.function.Consumer;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
@@ -25,18 +26,21 @@ public class CannonBulletCommonStatusHandler {
     public static final String BULLET_FLYING = "CannonFireBulletFlying";
     public static final String BULLET_ON_GROUND = "CannonFireBulletOnGround";
 
-    public static void markBullet(LivingEntity entity, boolean isFlyingBullet) {
-        entity.setDiscardFriction(isFlyingBullet);
-        entity.getPersistentData().putBoolean(BULLET_FLYING, isFlyingBullet);
-        if (entity instanceof ServerPlayer player) {
-            if (isFlyingBullet) {
-                player.getAbilities().mayfly = true;
-            } else {
-                player.gameMode.getGameModeForPlayer().updatePlayerAbilities(player.getAbilities());
+    public static Consumer<CannonFireNetwork.BulletStatusPacket> markBulletStatus(LivingEntity entity) {
+        return status -> {
+            entity.setDiscardFriction(status.isBullet());
+            entity.makeStuckInBlock(entity.getFeetBlockState(), Vec3.ZERO);
+            entity.getPersistentData().putBoolean(BULLET_FLYING, status.isBullet());
+            entity.setDeltaMovement(entity.getDeltaMovement().add(status.additionalDeltaMovement()));
+            if (entity instanceof ServerPlayer player) {
+                if (status.isBullet()) {
+                    player.getAbilities().mayfly = true;
+                } else {
+                    player.gameMode.getGameModeForPlayer().updatePlayerAbilities(player.getAbilities());
+                }
+                CannonFireNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), status);
             }
-            var packet = new CannonFireNetwork.BulletStatusPacket(isFlyingBullet);
-            CannonFireNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), packet);
-        }
+        };
     }
 
     @SubscribeEvent
@@ -56,7 +60,7 @@ public class CannonBulletCommonStatusHandler {
         if (entity.getPersistentData().getBoolean(BULLET_ON_GROUND)) {
             entity.getPersistentData().remove(BULLET_ON_GROUND);
             if (entity.isOnGround() || entity.isFallFlying()) {
-                markBullet(entity, false);
+                markBulletStatus(entity).accept(new CannonFireNetwork.BulletStatusPacket(false, Vec3.ZERO));
             }
         }
         if (entity.getPersistentData().getBoolean(BULLET_FLYING)) {

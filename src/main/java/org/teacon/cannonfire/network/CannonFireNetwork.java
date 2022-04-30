@@ -2,6 +2,7 @@ package org.teacon.cannonfire.network;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -32,23 +33,22 @@ public class CannonFireNetwork {
                 BulletStatusPacket::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 
-    public record BulletStatusPacket(boolean isBullet) {
+    public record BulletStatusPacket(boolean isBullet, Vec3 additionalDeltaMovement) {
         public static BulletStatusPacket decode(FriendlyByteBuf buf) {
-            return new BulletStatusPacket(buf.readBoolean());
+            return new BulletStatusPacket(buf.readBoolean(),
+                    new Vec3(buf.readDouble(), buf.readDouble(), buf.readDouble()));
         }
 
         public void encode(FriendlyByteBuf buf) {
             buf.writeBoolean(this.isBullet);
+            buf.writeDouble(this.additionalDeltaMovement.x);
+            buf.writeDouble(this.additionalDeltaMovement.y);
+            buf.writeDouble(this.additionalDeltaMovement.z);
         }
 
         public void handle(Supplier<NetworkEvent.Context> supplier) {
-            supplier.get().enqueueWork(() -> {
-                if (this.isBullet) {
-                    DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> CannonBulletClientStatusHandler::markAsBullet);
-                } else {
-                    DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> CannonBulletClientStatusHandler::markAsNotBullet);
-                }
-            });
+            supplier.get().enqueueWork(() -> DistExecutor.safeCallWhenOn(Dist.CLIENT,
+                    () -> CannonBulletClientStatusHandler::markBulletStatus).accept(this));
             supplier.get().setPacketHandled(true);
         }
     }

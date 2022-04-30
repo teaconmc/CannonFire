@@ -15,25 +15,22 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.teacon.cannonfire.block.CannonBlockEntity;
 import org.teacon.cannonfire.entity.CannonBulletCommonStatusHandler;
+import org.teacon.cannonfire.network.CannonFireNetwork;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.function.Consumer;
 
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class CannonBulletClientStatusHandler {
-    public static void markAsBullet() {
-        var player = Minecraft.getInstance().player;
-        if (player != null) {
-            CannonBulletCommonStatusHandler.markBullet(player, true);
-        }
-    }
-
-    public static void markAsNotBullet() {
-        var player = Minecraft.getInstance().player;
-        if (player != null) {
-            CannonBulletCommonStatusHandler.markBullet(player, false);
-        }
+    public static Consumer<CannonFireNetwork.BulletStatusPacket> markBulletStatus() {
+        return status -> {
+            var player = Minecraft.getInstance().player;
+            if (player != null) {
+                CannonBulletCommonStatusHandler.markBulletStatus(player).accept(status);
+            }
+        };
     }
 
     @SubscribeEvent
